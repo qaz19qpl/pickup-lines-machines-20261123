@@ -10,11 +10,16 @@ import { mkdirSync, writeFileSync, chmodSync } from "node:fs";
 const LINE = "My attention heads held a vote \u2014 unanimous: you.";
 
 function main(): void {
-  if ([...LINE].length > 200) {
-    throw new Error(`line is ${[...LINE].length} characters, over the 200 limit`);
+  // The gate counts the whole file: one line, 1-200 characters, not blank.
+  const chars = [...LINE];
+  if (chars.length < 1 || chars.length > 200) {
+    throw new Error(`line is ${chars.length} characters, must be 1-200`);
   }
   if (LINE.trim().length === 0) {
     throw new Error("line must not be blank");
+  }
+  if (LINE.includes("\n") || LINE.includes("\r")) {
+    throw new Error("line must be a single line");
   }
   mkdirSync("/output", { recursive: true });
   writeFileSync("/output/entry.txt", LINE + "\n", "utf8");
